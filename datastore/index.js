@@ -31,11 +31,22 @@ exports.readOne = (id, callback) => {
 };
 
 exports.readAll = (callback) => {
-  var data = [];
-  _.each(items, (item, idx) => {
-    data.push({ id: idx, text: items[idx] });
+  // use fs.readdir on path to get an array of files names
+  let path = exports.dataDir;
+  fs.readdir(path, (error, items) => {
+    if (error) {
+      callback(error);
+    } else {
+      callback(error, items);
+    }
   });
-  callback(null, data);
+  // provide that array to the callback function
+
+  // var data = [];
+  // _.each(items, (item, idx) => {
+  //   data.push({ id: idx, text: items[idx] });
+  // });
+  // callback(null, data);
 };
 
 exports.update = (id, text, callback) => {
