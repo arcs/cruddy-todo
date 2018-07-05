@@ -41,10 +41,9 @@ const writeCounter = (count, callback) => {
 exports.getNextUniqueId = (cb) => {
   readCounter((error, fileCount) => {
     writeCounter(+fileCount + 1, cb);
-    counter = counter + 1;
+    // counter = counter + 1;
   });
 };
-
 
 
 // Configuration -- DO NOT MODIFY //////////////////////////////////////////////
