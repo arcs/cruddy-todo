@@ -45,24 +45,14 @@ exports.readAll = (callback) => {
       let messages = items.map(item => {
         let newPath = path.join(exports.dataDir, item);
         return promiseRead(newPath).then((data) => {
-          return {id: item.slice(0,5), text: data.toString()};
+          return {id: item.slice(0, 5), text: data.toString()};
         });
       });
-      let results = [];
       promise.all(messages).then(messages => {
-        for (let message of messages) {
-          results.push(message);
-        }
-        console.log(results)
-        callback(null, results);
+        callback(null, messages);
       });
     }
   });
-  // var data = [];
-  // _.each(items, (item, idx) => {
-  //   data.push({ id: idx, text: items[idx] });
-  // });
-  // callback(null, data);
 };
 
 exports.update = (id, text, callback) => {
