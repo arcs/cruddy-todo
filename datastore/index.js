@@ -2,6 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
+const promise = require('bluebird');
+
+const promiseRead = promise.promisify(fs.readFile);
 
 var items = {};
 
@@ -9,7 +12,7 @@ var items = {};
 
 exports.create = (text, callback) => {
   counter.getNextUniqueId((error, id) => {
-    items[id] = text;
+    // items[id] = text;
     let newPath = path.join(exports.dataDir, id + '.txt');
     fs.writeFile(newPath, text, function(error) {
       if (error) {
@@ -34,14 +37,38 @@ exports.readOne = (id, callback) => {
 };
 
 exports.readAll = (callback) => {
-  // use fs.readdir on path to get an array of files names
-  let path = exports.dataDir;
-  // provide that array to the callback function
-  fs.readdir(path, (error, items) => {
+  let newPath = exports.dataDir;
+  fs.readdir(newPath, (error, items) => {
     if (error) {
       callback(error);
     } else {
-      callback(error, items);
+      // loop through each file in the array and replace it with the message object
+      let messages = items.map(item => {
+        let newPath = path.join(exports.dataDir, item);
+        return promiseRead(newPath, (error, data) => {
+          return data;
+        });
+      });
+      let results = [];
+      promise.all(messages).then(messages => {
+        for (let message of messages) {
+          console.log(message.toString());
+          let obj = {id: '0', text: message.toString()};
+          results.push(obj);
+        }
+        console.log(results)
+        callback(error, results);
+        // let obj = {id: '0', text: message.toString()}
+        // console.log(obj);
+        // results.push(obj);
+      });
+      // var results = [];
+      // promise.all(messages, (message) => {
+      //   console.log(message);
+      //   results.push(message);
+      // }).then(() => {
+      //   callback(error, results);
+      // });
     }
   });
   // var data = [];
