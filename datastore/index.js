@@ -69,14 +69,14 @@ exports.update = (id, text, callback) => {
 };
 
 exports.delete = (id, callback) => {
-  var item = items[id];
-  delete items[id];
-  if(!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`))
-  } else {
-    callback();
-  }
+  let newPath = path.join(exports.dataDir, id + '.txt');
+  fs.unlink(newPath, (error) => {
+    if (error) {
+      callback(error);
+    } else {
+      callback(null);
+    }
+  });
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
