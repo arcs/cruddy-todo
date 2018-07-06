@@ -42,33 +42,20 @@ exports.readAll = (callback) => {
     if (error) {
       callback(error);
     } else {
-      // loop through each file in the array and replace it with the message object
       let messages = items.map(item => {
         let newPath = path.join(exports.dataDir, item);
-        return promiseRead(newPath, (error, data) => {
-          return data;
+        return promiseRead(newPath).then((data) => {
+          return {id: item.slice(0,5), text: data.toString()};
         });
       });
       let results = [];
       promise.all(messages).then(messages => {
         for (let message of messages) {
-          console.log(message.toString());
-          let obj = {id: '0', text: message.toString()};
-          results.push(obj);
+          results.push(message);
         }
         console.log(results)
-        callback(error, results);
-        // let obj = {id: '0', text: message.toString()}
-        // console.log(obj);
-        // results.push(obj);
+        callback(null, results);
       });
-      // var results = [];
-      // promise.all(messages, (message) => {
-      //   console.log(message);
-      //   results.push(message);
-      // }).then(() => {
-      //   callback(error, results);
-      // });
     }
   });
   // var data = [];
