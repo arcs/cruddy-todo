@@ -44,7 +44,6 @@ exports.readAll = (callback) => {
       callback(error, items);
     }
   });
-
   // var data = [];
   // _.each(items, (item, idx) => {
   //   data.push({ id: idx, text: items[idx] });
@@ -53,13 +52,20 @@ exports.readAll = (callback) => {
 };
 
 exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    items[id] = text;
-    callback(null, {id: id, text: text});
-  }
+  let newPath = path.join(exports.dataDir, id + '.txt');
+  fs.access(newPath, (error) => {
+    if (error) {
+      callback(error);
+    } else {
+      fs.writeFile(newPath, text, (error) => {
+        if (error) {
+          callback(error);
+        } else {
+          callback(null, {id, text});
+        }
+      });
+    }
+  });
 };
 
 exports.delete = (id, callback) => {
